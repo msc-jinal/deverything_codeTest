@@ -1,16 +1,13 @@
 package com.deverything.candidate.productstore;
 
-import com.deverything.candidate.productstore.model.CheckoutRequest;
-import com.deverything.candidate.productstore.model.CheckoutResponse;
-import com.deverything.candidate.productstore.model.Product;
-import com.deverything.candidate.productstore.model.ProductDimensionResponse;
-import org.junit.jupiter.api.BeforeAll;
+import com.deverything.candidate.productstore.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,33 +15,34 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ApiServiceTest {
 
     @Autowired
-    ApiService api;
+    ApiService apiService;
 
     @Test
     public void testGetProducts(){
-        List<Product> productList = api.getProducts();
-        assertNotNull(productList,"Unable to get All Products from API");
+        assertNotNull(apiService.getProducts(),"Unable to get All Products from API");
     }
 
     @Test
     public void testGetBoxes(){
-        assertNotNull(api.getBoxes(),"Unable to get All Boxes from API");
+        assertNotNull(apiService.getBoxes(),"Unable to get All Boxes from API");
     }
 
     @Test
     public void testGetProductByPrice(){
-        List<Product> productList = api.getProductsByPrice(300);
-        assertNotNull(productList,"Unable to get All Products from API");
-        System.out.println(productList.size());
+        List<Product> productList = apiService.getProductsByPrice(300);
+        assertEquals (4, productList.size(),"Did not get expected number of products");
     }
 
     @Test
     public void testGetProductDimension(){
-        ProductDimensionResponse response =  api.getProductDimensions(7);
+        ProductDimensionResponse response =  apiService.getProductDimensions(3);
+        assertEquals(150,response.getWidth());
+        assertEquals(150,response.getHeight());
+
+        response =  apiService.getProductDimensions(7);
         assertEquals(225,response.getWidth());
         assertEquals(230,response.getHeight());
     }
-
 
     @Test
     public void testCheckoutSuccess(){
@@ -52,7 +50,7 @@ public class ApiServiceTest {
         list.add(3);
         list.add(7);
         CheckoutRequest checkoutRequest = new CheckoutRequest(3,list);
-        CheckoutResponse checkoutResponse = api.checkout(checkoutRequest);
+        CheckoutResponse checkoutResponse = apiService.checkout(checkoutRequest);
         assertEquals(200,checkoutResponse.getStatusCode(),"Unable to process checkout");
     }
 
@@ -62,12 +60,23 @@ public class ApiServiceTest {
         list.add(1);
         list.add(2);
         CheckoutRequest checkoutRequest = new CheckoutRequest(3,list);
-        CheckoutResponse checkoutResponse = api.checkout(checkoutRequest);
+        CheckoutResponse checkoutResponse = apiService.checkout(checkoutRequest);
         assertNull(checkoutResponse,"Unable to process checkout");
     }
 
     @Test
+    public void testFindSuitableBox(){
+        List<Integer> productIds = new ArrayList<>();
+        productIds.add(3);
+        productIds.add(7);
+        Box box = apiService.findSuitableBox (productIds);
+        assertNotNull(box,"Did not found suitable box");
+        assertEquals(5, box.getId(),"Did not found suitable box");
+    }
+
+    @Test
     public void testAllTheThings(){
+        /*
         System.out.println("Let's get all products from the API:");
         System.out.println("YOUR-RESULT-HERE");
 
@@ -82,5 +91,6 @@ public class ApiServiceTest {
 
         System.out.println("Now we place the order using the checkout in the API");
         System.out.println("YOUR-RESULT-HERE");
+        */
     }
 }

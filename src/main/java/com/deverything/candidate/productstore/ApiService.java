@@ -3,6 +3,7 @@ package com.deverything.candidate.productstore;
 import com.deverything.candidate.productstore.model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ApiService {
 
@@ -35,8 +36,6 @@ public interface ApiService {
      */
     public List<Product> getProductsByPrice(int productPrice);
 
-    /*
-    Find suitable box
-     */
+    public Box findSuitableBox(List<Integer> productIds);
 
 }
